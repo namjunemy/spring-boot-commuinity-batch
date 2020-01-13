@@ -10,7 +10,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,7 +83,12 @@ public class InactiveUserConfig {
         return User::setInactive;
     }
 
-    public ItemWriter<User> inactiveUserWriter() {
-        return userRepository::saveAll;
+    public JpaItemWriter<User> inactiveUserWriter() {
+        JpaItemWriter<User> jpaItemWriter = new JpaItemWriter<>();
+        jpaItemWriter.setEntityManagerFactory(entityManagerFactory);
+        return jpaItemWriter;
     }
+//    public ItemWriter<User> inactiveUserWriter() {
+//        return userRepository::saveAll;
+//    }
 }
