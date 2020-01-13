@@ -12,12 +12,17 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -26,7 +31,6 @@ public class InactiveUserConfig {
 
     private static final int CHUNK_SIZE = 15;
     private final EntityManagerFactory entityManagerFactory;
-    private final UserRepository userRepository;
 
     @Bean
     public Job inactiveUserJob(JobBuilderFactory jobBuilderFactory, Step inactiveJobStep) {
@@ -37,13 +41,25 @@ public class InactiveUserConfig {
     }
 
     @Bean
-    public Step inactiveJobStep(StepBuilderFactory stepBuilderFactory) {
+    public Step inactiveJobStep(StepBuilderFactory stepBuilderFactory,
+                                ListItemReader<User> inactiveUserReader) {
         return stepBuilderFactory.get("inactiveUserStep")
             .<User, User>chunk(CHUNK_SIZE)
-            .reader(inactiveUserJpaReader())
+            .reader(inactiveUserReader)
             .processor(inactiveUserProcessor())
             .writer(inactiveUserWriter())
             .build();
+    }
+
+    @Bean
+    @StepScope
+    public ListItemReader<User> inactiveUserReader(@Value("#{jobParameters[nowDate]}") Date nowDate,
+                                                   UserRepository userRepository) {
+        LocalDateTime now = LocalDateTime.ofInstant(nowDate.toInstant(), ZoneId.systemDefault());
+        List<User> inactiveUsers =
+            userRepository.findByUpdatedDateBeforeAndStatusEquals(now.minusYears(1), UserStatus.ACTIVE);
+        return new ListItemReader<>(inactiveUsers);
+
     }
 
     @Bean(destroyMethod = "")
