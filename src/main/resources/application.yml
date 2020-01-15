@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/community_batch
-    username: {id}
-    password: {password}
-    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/community_batch?characterEncoding=UTF-8&serverTimezone=UTC
+    username:
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
     hibernate:
