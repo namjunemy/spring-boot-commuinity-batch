@@ -1,4 +1,4 @@
-package io.namjune.bootbatch.jobs;
+package io.namjune.bootbatch.jobs.inactive;
 
 import io.namjune.bootbatch.domain.enums.UserStatus;
 import io.namjune.bootbatch.repository.UserRepository;

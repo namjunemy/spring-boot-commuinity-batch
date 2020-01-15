@@ -1,7 +1,8 @@
-package io.namjune.bootbatch.jobs;
+package io.namjune.bootbatch.jobs.inactive;
 
 import io.namjune.bootbatch.domain.User;
 import io.namjune.bootbatch.domain.enums.UserStatus;
+import io.namjune.bootbatch.jobs.inactive.listener.InactiveJobListener;
 import io.namjune.bootbatch.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -33,9 +34,12 @@ public class InactiveUserConfig {
     private final EntityManagerFactory entityManagerFactory;
 
     @Bean
-    public Job inactiveUserJob(JobBuilderFactory jobBuilderFactory, Step inactiveJobStep) {
+    public Job inactiveUserJob(JobBuilderFactory jobBuilderFactory,
+                               InactiveJobListener inactiveJobListener,
+                               Step inactiveJobStep) {
         return jobBuilderFactory.get("inactiveUserJob")
             .preventRestart()
+            .listener(inactiveJobListener)
             .start(inactiveJobStep)
             .build();
     }

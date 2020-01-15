@@ -1,4 +1,4 @@
-package io.namjune.bootbatch.jobs.readers;
+package io.namjune.bootbatch.jobs.inactive.readers;
 
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
