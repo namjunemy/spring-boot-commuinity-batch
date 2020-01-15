@@ -3,6 +3,7 @@ package io.namjune.bootbatch.jobs.inactive;
 import io.namjune.bootbatch.domain.User;
 import io.namjune.bootbatch.domain.enums.UserStatus;
 import io.namjune.bootbatch.jobs.inactive.listener.InactiveJobListener;
+import io.namjune.bootbatch.jobs.inactive.listener.InactiveStepListener;
 import io.namjune.bootbatch.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -46,12 +47,14 @@ public class InactiveUserConfig {
 
     @Bean
     public Step inactiveJobStep(StepBuilderFactory stepBuilderFactory,
-                                ListItemReader<User> inactiveUserReader) {
+                                ListItemReader<User> inactiveUserReader,
+                                InactiveStepListener inactiveStepListener) {
         return stepBuilderFactory.get("inactiveUserStep")
             .<User, User>chunk(CHUNK_SIZE)
             .reader(inactiveUserReader)
             .processor(inactiveUserProcessor())
             .writer(inactiveUserWriter())
+            .listener(inactiveStepListener)
             .build();
     }
 
